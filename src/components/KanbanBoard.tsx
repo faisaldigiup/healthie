@@ -7,6 +7,7 @@ import { KanbanColumn } from "#/components/KanbanColumn";
 import { charactersQueryKey, fetchCharacters } from "#/lib/characters";
 import { COLUMNS } from "#/lib/columns";
 import type { Point } from "#/lib/types";
+import logo from "#/logo.svg";
 import { useKanbanStore } from "#/stores/kanban";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,12 +31,16 @@ export function KanbanBoard() {
 			<div className="mx-auto max-w-6xl px-6 py-16 sm:px-10 lg:px-12 lg:py-20">
 				<header className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
 					<div className="max-w-md space-y-3">
-						<h1 className="text-3xl font-medium tracking-tight text-foreground">
+						<h1 className="flex items-center gap-2.5 text-3xl font-medium tracking-tight text-foreground">
+							<img
+								src={logo}
+								alt=""
+								className="h-[1.15em] w-auto"
+							/>
 							Healthie
 						</h1>
 						<p className="text-sm leading-relaxed text-muted-foreground">
-							A quiet place to move work. Assign a character, then drag items
-							between columns.
+							Kanban board
 						</p>
 					</div>
 					<div className="flex items-center gap-3">

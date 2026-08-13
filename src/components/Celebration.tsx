@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import type { Point } from '#/lib/types'
 
-const COLORS = ['#c45c26', '#2c2a28', '#d9c4a8', '#e8a87c', '#f6f3ee', '#ffffff']
+const COLORS = ['#552bd8', '#8f76f4', '#c0f5e6', '#0aaee2', '#080f1e', '#ffffff']
 
 type Particle = {
   id: number
@@ -24,7 +24,7 @@ function createParticles(): Array<Particle> {
       dx: Math.cos(angle) * distance,
       dy: Math.sin(angle) * distance - 40,
       rotate: (Math.random() - 0.5) * 540,
-      color: COLORS[id % COLORS.length] ?? '#c45c26',
+      color: COLORS[id % COLORS.length] ?? '#552bd8',
       size: 6 + Math.random() * 10,
       borderRadius: Math.random() > 0.45 ? '999px' : '3px',
     }
