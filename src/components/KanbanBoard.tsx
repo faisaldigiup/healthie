@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Celebration } from "#/components/Celebration";
 import { CreateItemDialog } from "#/components/CreateItemDialog";
 import { KanbanColumn } from "#/components/KanbanColumn";
-import { charactersQueryKey, fetchCharacters } from "#/lib/characters";
+import { charactersQueryOptions } from "#/lib/characters";
 import { COLUMNS } from "#/lib/columns";
 import type { Point } from "#/lib/types";
 import logo from "#/logo.svg";
@@ -19,10 +19,8 @@ export function KanbanBoard() {
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [celebration, setCelebration] = useState<Point | null>(null);
 
-	useQuery({
-		queryKey: charactersQueryKey,
-		queryFn: fetchCharacters,
-	});
+	// Warms the cache for the create dialog; shares the entry with it.
+	useQuery(charactersQueryOptions());
 
 	const totalItems = Object.keys(items).length;
 
@@ -32,11 +30,7 @@ export function KanbanBoard() {
 				<header className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
 					<div className="max-w-md space-y-3">
 						<h1 className="flex items-center gap-2.5 text-3xl font-medium tracking-tight text-foreground">
-							<img
-								src={logo}
-								alt=""
-								className="h-[1.15em] w-auto"
-							/>
+							<img src={logo} alt="" className="h-[1.15em] w-auto" />
 							Healthie
 						</h1>
 						<p className="text-sm leading-relaxed text-muted-foreground">

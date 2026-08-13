@@ -36,7 +36,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { charactersQueryKey, fetchCharacters } from "#/lib/characters";
+import { charactersQueryOptions } from "#/lib/characters";
 import type { Character } from "#/lib/types";
 import { useKanbanStore } from "#/stores/kanban";
 
@@ -54,8 +54,7 @@ export function CreateItemDialog({ open, onClose }: CreateItemDialogProps) {
 	const [error, setError] = useState<string | null>(null);
 
 	const charactersQuery = useQuery({
-		queryKey: charactersQueryKey,
-		queryFn: fetchCharacters,
+		...charactersQueryOptions(),
 		enabled: open,
 	});
 

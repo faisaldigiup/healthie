@@ -1,3 +1,5 @@
+import { queryOptions } from '@tanstack/react-query'
+
 import type { Character } from '#/lib/types'
 
 const GRAPHQL_URL = 'https://rickandmortyapi.com/graphql'
@@ -5,9 +7,6 @@ const GRAPHQL_URL = 'https://rickandmortyapi.com/graphql'
 const CHARACTERS_QUERY = `
   query Characters($page: Int!) {
     characters(page: $page) {
-      info {
-        pages
-      }
       results {
         id
         name
@@ -22,14 +21,13 @@ const CHARACTERS_QUERY = `
 type CharactersQueryResponse = {
   data?: {
     characters: {
-      info: { pages: number }
       results: Array<Character | null>
     }
   }
   errors?: Array<{ message: string }>
 }
 
-async function fetchCharacterPage(page: number) {
+export async function fetchCharacters(page: number): Promise<Array<Character>> {
   const response = await fetch(GRAPHQL_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -49,23 +47,35 @@ async function fetchCharacterPage(page: number) {
     throw new Error(payload.errors[0]?.message ?? 'GraphQL error')
   }
 
-  const results =
+  return (
     payload.data?.characters.results.filter((character): character is Character => {
       return character !== null
     }) ?? []
-
-  return {
-    results,
-    pages: payload.data?.characters.info.pages ?? 1,
-  }
+  )
 }
 
-export async function fetchCharacters(): Promise<Array<Character>> {
-  const firstPage = await fetchCharacterPage(1)
-  const extraPages = [2, 3].filter((page) => page <= firstPage.pages)
-  const extra = await Promise.all(extraPages.map((page) => fetchCharacterPage(page)))
+export const DEFAULT_CHARACTERS_PAGE = 1
 
-  return [firstPage, ...extra].flatMap((page) => page.results)
+export function charactersQueryKey(page: number) {
+  return ['rick-and-morty', 'characters', page] as const
 }
 
-export const charactersQueryKey = ['rick-and-morty', 'characters'] as const
+/**
+ * Single source of truth for the characters query. Every consumer must use this
+ * so the key, the fetcher and the freshness options always line up — the cache
+ * entry is then shared and one page is fetched once, no matter how many
+ * components mount it or what `staleTime` the QueryClient defaults to.
+ */
+export function charactersQueryOptions(page: number = DEFAULT_CHARACTERS_PAGE) {
+  return queryOptions({
+    queryKey: charactersQueryKey(page),
+    queryFn: () => fetchCharacters(page),
+    // Pinned here rather than inherited: a `staleTime: 0` default on the client
+    // would let a second mount refetch the same page.
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  })
+}
